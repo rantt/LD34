@@ -53,7 +53,7 @@ Game.Play.prototype = {
     this.game.physics.arcade.setBoundsToWorld(true, true, true, true, false);
 
     for (var i = 0; i < fishesTotal; i++) {
-      var size = rand(0.75,1,1.2);
+      var size = rand(0.75,1,2);
       // var size = rand(0.5,2);
       // var size = 0.75;
       fishes.push(new Fish(i, this.game, this.player,size));
@@ -132,8 +132,8 @@ Game.Play.prototype = {
       player.kill();
     }else {
       fish.kill();
-      player.scale.x = player.scale.x + 0.1;
-      player.scale.y = player.scale.x + 0.1;
+      player.scale.x += 0.2;
+      player.scale.y += 0.2;
     }
   },
   wrapSprite: function(sprite) {
