@@ -17,12 +17,20 @@ var aKey;
 var sKey;
 var dKey;
 var fishes = [];
-var fishesTotal = 10;
+var fishesAlive = 0;
+// var fishesTotal = 10;
 // var boundedX = 1600;
 // var boundedY = 1400;
 
 var boundedX = 1024;
 var boundedY = 768;
+var level = 1;
+
+var levels = [[0.75],
+              [0.75, 0.75, 0.75, 0.75, 0.75, 0.75],
+              [0.75,1,1],
+              [0.75,0.5,1,1.5],
+              ];
 
 Game.Play = function(game) {
   this.game = game;
@@ -44,32 +52,26 @@ Game.Play.prototype = {
 
 
     this.currentSpeed = 0;
-    var circSize = 32;
-    this.circlebmd = this.game.add.bitmapData(circSize, circSize);
-    this.circlebmd.circle(circSize/2,circSize/2,circSize/2,'#FFFFFF');
+    // var circSize = 32;
+    // this.circlebmd = this.game.add.bitmapData(circSize, circSize);
+    // this.circlebmd.circle(circSize/2,circSize/2,circSize/2,'#FFFFFF');
 
-    this.player = this.game.add.sprite(Game.w/2, Game.h/2, this.circlebmd);
+    // this.player = this.game.add.sprite(Game.w/2, Game.h/2, this.circlebmd);
+    this.player = this.game.add.sprite(Game.w/2, Game.h/2, 'fishy');
+    this.player.animations.add('swim', [0,1], 10, true);
+    // this.player.tint = 0x0000ff;
+    
     this.player.anchor.setTo(0.5, 0.5);
+    this.player.alive = true;
     this.player.health = 10;
     this.game.physics.arcade.enable(this.player); 
+
+    this.player.body.setSize(40,40);
     // this.player.body.collideWorldBounds = true;
 
     this.game.physics.arcade.setBoundsToWorld(true, true, true, true, false);
-    var sizes = [0.5,0.75,1,2,3];
 
-    //declare enemy fish
-    for (var i = 0; i < fishesTotal; i++) {
-      var scale = sizes[Math.floor(Math.random() * sizes.length)]
-
-      // var size = rand(0.5,2);
-      // var size = 1;
-      fishes.push(new Fish(i, this.game, this.player,scale));
-    }
-
-    // this.fish = new Fish(0, this.game, this.player); 
-
-
-
+    this.loadLevel(level);
 
     // // Music
     // this.music = this.game.add.sound('music');
@@ -92,10 +94,33 @@ Game.Play.prototype = {
 
 
   },
+  loadLevel: function(lvl) {
+    fishes = [];
+    this.player.scale.x = 1;
+    this.player.scale.y = 1;
 
+    var sizes = levels[lvl-1];
+    for (var i=0;i<sizes.length;i++) {
+      // fishes.push(new Fish(i, this.game, this.player, sizes[i])); 
+      var fish = new Fish(i, this.game, this.player, sizes[i]);
+      fishes.push(fish); 
+      this.game.debug.body(fish);
+
+      fishesAlive += 1;
+    }
+  },
   update: function() {
 
     // Controls
+    if (this.game.input.activePointer.isDown) {
+      this.currentSpeed = 500;
+      console.log(this.game.input.activePointer.x +' '+this.player.x);
+      if (this.player.y > this.game.input.activePointer.y+20 || this.player.y < this.game.input.activePointer.y-20 || this.player.y > this.game.input.activePointer.y+20 || this.player.y < this.game.input.activePointer.y-20) {
+        this.game.physics.arcade.moveToPointer(this.player, this.currentSpeed);
+        this.player.rotation = this.game.physics.arcade.angleBetween(this.player,this.game.input.activePointer)
+      }
+    }    
+
     if (this.cursors.left.isDown || aKey.isDown) {
         this.player.angle -= 4.5;
     } else if (this.cursors.right.isDown || dKey.isDown) {
@@ -103,7 +128,7 @@ Game.Play.prototype = {
     }
 
     if (this.cursors.up.isDown || wKey.isDown) {
-        this.currentSpeed = 550;
+        this.currentSpeed = 500;
     }else if (this.cursors.down.isDown || sKey.isDown) {
       this.currentSpeed = 0; //Drift
     }else {
@@ -113,7 +138,11 @@ Game.Play.prototype = {
     }
 
     if (this.currentSpeed > 0) {
-        this.game.physics.arcade.velocityFromRotation(this.player.rotation, this.currentSpeed, this.player.body.velocity);
+      this.player.play('swim');
+      this.game.physics.arcade.velocityFromRotation(this.player.rotation, this.currentSpeed, this.player.body.velocity);
+    }else {
+      this.player.frame = 0;
+      this.player.animations.stop();
     }
 
     this.wrapSprite(this.player);
@@ -125,7 +154,12 @@ Game.Play.prototype = {
         fishes[i].update();
         this.wrapSprite(fishes[i].sprite);
         this.game.physics.arcade.overlap(this.player, fishes[i].sprite, this.fishEatFish, null, this);
+
       }
+
+    }
+    if (fishesAlive === 0) {
+      this.loadLevel(level+=1);
     }
 
     // this.fish.update();
@@ -136,20 +170,21 @@ Game.Play.prototype = {
   },
   fishEatFish: function(player, fish) {
     if (player.scale.x < fish.scale.x) {
-      if (player.health > 0) {
-        if (this.game.time.now > this.hitTimer + 3000) {
-          player.health -= 1;
-          player.scale.x -= 0.1;
-          player.scale.y -= 0.1;
-          this.hitTimer = this.game.time.now;
-        }
-      }else {
+      // if (player.health > 0) {
+      //   if (this.game.time.now > this.hitTimer + 1000) {
+      //     player.health -= 1;
+      //     player.scale.x -= 0.1;
+      //     player.scale.y -= 0.1;
+      //     this.hitTimer = this.game.time.now;
+      //   }
+      // }else {
         player.kill();
-      }
-    }else {
+      // }
+    }else if (player.scale.x > fish.scale.x) {
       fish.kill();
-      player.scale.x += 0.2;
-      player.scale.y += 0.2;
+      fishesAlive -= 1;
+      player.scale.x += 0.25;
+      player.scale.y += 0.25;
     }
   },
   wrapSprite: function(sprite) {
@@ -179,8 +214,10 @@ Game.Play.prototype = {
   //     this.music.volume = 0.5;
   //   }
   // },
-  // render: function() {
-  //   game.debug.text('Health: ' + tri.health, 32, 96);
-  // }
+  render: function() {
+    game.debug.text('fishesAlive: ' + fishesAlive, 32, 96);
+    this.game.debug.spriteInfo(this.player, 64,64);
+    this.game.debug.body(this.player);
+  }
 
 };
