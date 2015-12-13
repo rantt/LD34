@@ -27,7 +27,9 @@ Game.Play.prototype = {
 
     this.game.world.setBounds(0, 0 ,1600,1200);
     // this.game.world.setBounds(0, 0 ,Game.w ,Game.h);
+    
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
+
     this.space = this.game.add.tileSprite(0,0,1600,1200,'background');
 
     this.currentSpeed = 0;
@@ -41,6 +43,14 @@ Game.Play.prototype = {
     this.player.body.collideWorldBounds = true;
 
     this.game.physics.arcade.setBoundsToWorld(true, true, true, true, false);
+
+    this.enemy = this.game.add.sprite(this.game.world.randomX, this.game.world.randomY, this.circlebmd);
+    this.enemy.anchor.setTo(0.5, 0.5);
+    this.game.physics.arcade.enable(this.enemy); 
+    this.enemy.body.collideWorldBounds = true;
+
+    this.enemy.tint = 0xff0000;
+
 
     // // Music
     // this.music = this.game.add.sound('music');
@@ -67,21 +77,35 @@ Game.Play.prototype = {
   update: function() {
 
     // Controls
-    if (this.cursors.left.isDown || aKey.isDown)
+    if (this.cursors.left.isDown || aKey.isDown) {
         this.player.angle -= 4.5;
-    else if (this.cursors.right.isDown || dKey.isDown)
+    } else if (this.cursors.right.isDown || dKey.isDown) {
         this.player.angle += 4.5;
+    }
 
-    if (this.cursors.up.isDown || wKey.isDown)
+    if (this.cursors.up.isDown || wKey.isDown) {
         this.currentSpeed = 550;
-    else if (this.cursors.down.isDown || sKey.isDown)
+    }else if (this.cursors.down.isDown || sKey.isDown) {
       this.currentSpeed = 0; //Drift
-    else
-        if (this.currentSpeed > 0)
+    }else {
+        if (this.currentSpeed > 0) {
             this.currentSpeed -= 12;
+        }
+    }
 
-    if (this.currentSpeed > 0)
+    //Update Enemies
+    this.enemy.rotation = this.game.physics.arcade.angleBetween(this.enemy, this.player); 
+    if (this.game.physics.arcade.distanceBetween(this.enemy, this.player) < 300) {
+      if (this.player.alive === true) {
+        this.game.physics.arcade.moveToObject(this.enemy, this.player, 200);
+      }
+    }else {
+      this.game.physics.arcade.velocityFromRotation(this.enemy.rotation, 100, this.enemy.body.velocity);
+    }
+
+    if (this.currentSpeed > 0) {
         this.game.physics.arcade.velocityFromRotation(this.player.rotation, this.currentSpeed, this.player.body.velocity);
+    }
 
 
     // // Toggle Music
