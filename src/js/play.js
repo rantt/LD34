@@ -6,9 +6,9 @@
  */
 
 // // Choose Random integer in a range
-// function rand (min, max) {
-//     return Math.floor(Math.random() * (max - min + 1)) + min;
-// }
+function rand (min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
 // var musicOn = true;
 
@@ -17,6 +17,8 @@ var wKey;
 var aKey;
 var sKey;
 var dKey;
+var fishes = [];
+var fishesTotal = 10;
 
 Game.Play = function(game) {
   this.game = game;
@@ -44,13 +46,16 @@ Game.Play.prototype = {
 
     this.game.physics.arcade.setBoundsToWorld(true, true, true, true, false);
 
-    this.enemy = this.game.add.sprite(this.game.world.randomX, this.game.world.randomY, this.circlebmd);
-    this.enemy.anchor.setTo(0.5, 0.5);
-    this.game.physics.arcade.enable(this.enemy); 
-    this.enemy.body.collideWorldBounds = true;
+    for (var i = 0; i < fishesTotal; i++) {
+      var size = rand(0.75,1,2);
+      // var size = 0.75;
+      fishes.push(new Fish(i, this.game, this.player,size));
+    }
 
-    this.enemy.tint = 0xff0000;
+    // this.fish = new Fish(0, this.game, this.player); 
 
+
+    //declare enemy fish
 
     // // Music
     // this.music = this.game.add.sound('music');
@@ -93,20 +98,19 @@ Game.Play.prototype = {
         }
     }
 
-    //Update Enemies
-    this.enemy.rotation = this.game.physics.arcade.angleBetween(this.enemy, this.player); 
-    if (this.game.physics.arcade.distanceBetween(this.enemy, this.player) < 300) {
-      if (this.player.alive === true) {
-        this.game.physics.arcade.moveToObject(this.enemy, this.player, 200);
-      }
-    }else {
-      this.game.physics.arcade.velocityFromRotation(this.enemy.rotation, 100, this.enemy.body.velocity);
-    }
-
     if (this.currentSpeed > 0) {
         this.game.physics.arcade.velocityFromRotation(this.player.rotation, this.currentSpeed, this.player.body.velocity);
     }
 
+    for(var i = 0; i < fishes.length; i++)
+    {
+      if (fishes[i].alive) {
+        console.log('alive');
+        //Add collision Condition
+        fishes[i].update();
+      }
+    }
+    // this.fish.update();
 
     // // Toggle Music
     // muteKey.onDown.add(this.toggleMute, this);
