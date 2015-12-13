@@ -17,6 +17,7 @@ Game.Boot.prototype = {
 		this.game.load.image('loading', 'assets/images/loading.png');
 		this.game.load.image('title', 'assets/images/title.png');
 		this.game.load.image('instructions', 'assets/images/instructions.png');
+
   },
   create: function() {
    this.game.state.start('Load');
@@ -38,6 +39,8 @@ Game.Load.prototype = {
   	loadingText.anchor.setTo(0.5, 0.5);
   	var preloading = this.game.add.sprite(Game.w/2-64, Game.h/2+50, 'loading');
   	this.game.load.setPreloadSprite(preloading);
+
+    this.game.load.image('background','assets/images/background.png');
 
     // Music Track
     // this.game.load.audio('music','soundtrack.mp3');
