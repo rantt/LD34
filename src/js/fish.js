@@ -36,6 +36,8 @@ Fish.prototype = {
     //Update Enemies
     if (this.player.scale.x < this.sprite.scale.x) {
       this.sprite.tint = 0xff0000;
+    }else if (this.player.scale.x == this.sprite.scale.x) {
+      this.sprite.tint = 0x0000ff;
     }else {
       this.sprite.tint = 0x00ff00;
     }

@@ -1,7 +1,12 @@
+// var Game = {
+//   w: 800,
+//   h: 600
+// };
 var Game = {
-  w: 800,
-  h: 600
+  w: 1024,
+  h: 768 
 };
+
 
 // var w = 800;
 // var h = 600;
@@ -17,6 +22,10 @@ Game.Boot.prototype = {
 		this.game.load.image('loading', 'assets/images/loading.png');
 		this.game.load.image('title', 'assets/images/title.png');
 		this.game.load.image('instructions', 'assets/images/instructions.png');
+
+    this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+    this.game.scale.maxHeight = window.innerHeight;
+    this.game.scale.maxWidth = window.innerHeight*(Game.w/Game.h);
 
   },
   create: function() {

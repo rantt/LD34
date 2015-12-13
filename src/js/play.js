@@ -21,8 +21,9 @@ var fishesTotal = 10;
 // var boundedX = 1600;
 // var boundedY = 1400;
 
-var boundedX = 800;
-var boundedY = 600;
+var boundedX = 1024;
+var boundedY = 768;
+
 Game.Play = function(game) {
   this.game = game;
 };
@@ -39,6 +40,8 @@ Game.Play.prototype = {
 
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
+    this.hitTimer = this.game.time.now;
+
 
     this.currentSpeed = 0;
     var circSize = 32;
@@ -47,22 +50,26 @@ Game.Play.prototype = {
 
     this.player = this.game.add.sprite(Game.w/2, Game.h/2, this.circlebmd);
     this.player.anchor.setTo(0.5, 0.5);
+    this.player.health = 10;
     this.game.physics.arcade.enable(this.player); 
     // this.player.body.collideWorldBounds = true;
 
     this.game.physics.arcade.setBoundsToWorld(true, true, true, true, false);
+    var sizes = [0.5,0.75,1,2,3];
 
+    //declare enemy fish
     for (var i = 0; i < fishesTotal; i++) {
-      var size = rand(0.75,1,2);
+      var scale = sizes[Math.floor(Math.random() * sizes.length)]
+
       // var size = rand(0.5,2);
-      // var size = 0.75;
-      fishes.push(new Fish(i, this.game, this.player,size));
+      // var size = 1;
+      fishes.push(new Fish(i, this.game, this.player,scale));
     }
 
     // this.fish = new Fish(0, this.game, this.player); 
 
 
-    //declare enemy fish
+
 
     // // Music
     // this.music = this.game.add.sound('music');
@@ -129,7 +136,16 @@ Game.Play.prototype = {
   },
   fishEatFish: function(player, fish) {
     if (player.scale.x < fish.scale.x) {
-      player.kill();
+      if (player.health > 0) {
+        if (this.game.time.now > this.hitTimer + 3000) {
+          player.health -= 1;
+          player.scale.x -= 0.1;
+          player.scale.y -= 0.1;
+          this.hitTimer = this.game.time.now;
+        }
+      }else {
+        player.kill();
+      }
     }else {
       fish.kill();
       player.scale.x += 0.2;
