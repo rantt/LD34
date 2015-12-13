@@ -17,8 +17,8 @@ var Fish = function(index, game, player, scale) {
   this.sprite.scale.x = scale;
   this.sprite.scale.y = scale;
   this.game.physics.arcade.enable(this.sprite); 
-  this.sprite.body.collideWorldBounds = true;
-  this.sprite.body.bounce.setTo(1, 1);
+  // this.sprite.body.collideWorldBounds = true;
+  // this.sprite.body.bounce.setTo(1, 1);
   this.sprite.name = index.toString(); 
 
   this.sprite.angle = this.game.rnd.angle();
