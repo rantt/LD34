@@ -33,7 +33,6 @@ var levels = [[0.75],
               ];
 
 var levelMsgs = [];
-          
 
 Game.Play = function(game) {
   this.game = game;
@@ -47,7 +46,8 @@ Game.Play.prototype = {
 
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
-    this.hitTimer = this.game.time.now;
+    this.levelTimer = this.game.time.now;
+
 
 
     this.currentSpeed = 0;
@@ -73,9 +73,9 @@ Game.Play.prototype = {
     this.loadLevel(level);
 
     // // Music
-    // this.music = this.game.add.sound('music');
-    // this.music.volume = 0.5;
-    // this.music.play('',0,1,true);
+    this.music = this.game.add.sound('music');
+    this.music.volume = 0.5;
+    this.music.play('',0,1,true);
 
     //Setup WASD and extra keys
     wKey = this.game.input.keyboard.addKey(Phaser.Keyboard.W);
@@ -161,24 +161,13 @@ Game.Play.prototype = {
       this.loadLevel(level+=1);
     }
 
-    // this.fish.update();
-
     // // Toggle Music
     // muteKey.onDown.add(this.toggleMute, this);
 
   },
   fishEatFish: function(player, fish) {
     if (player.scale.x < fish.scale.x) {
-      // if (player.health > 0) {
-      //   if (this.game.time.now > this.hitTimer + 1000) {
-      //     player.health -= 1;
-      //     player.scale.x -= 0.1;
-      //     player.scale.y -= 0.1;
-      //     this.hitTimer = this.game.time.now;
-      //   }
-      // }else {
         player.kill();
-      // }
     }else if (player.scale.x > fish.scale.x) {
       fish.kill();
       fishesAlive -= 1;
@@ -188,15 +177,12 @@ Game.Play.prototype = {
   },
   wrapSprite: function(sprite) {
     if (sprite.x < 0) {
-      // sprite.x = this.game.width;
       sprite.x = boundedX;
-    // }else if (sprite.x > this.game.width) {
     }else if (sprite.x > boundedX) {
       sprite.x = 0;
     }
 
     if (sprite.y < 0) {
-      // sprite.y = this.game.height;
       sprite.y = boundedY;
     }else if (sprite.y > boundedY) {
       sprite.y = 0;

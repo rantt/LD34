@@ -53,7 +53,7 @@ Game.Load.prototype = {
     this.game.load.spritesheet('fishy', 'assets/images/fishy.png', 72, 72, 2);
 
     // Music Track
-    // this.game.load.audio('music','soundtrack.mp3');
+    this.game.load.audio('music','assets/audio/ld34.mp3');
 
   },
   create: function() {
