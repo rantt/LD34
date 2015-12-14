@@ -26,7 +26,7 @@ var boundedX = 1024;
 var boundedY = 768;
 var level = 1;
 
-var levels = [[0.75],
+var levels = [[2],
               [0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75],
               [0.75,1,1,1,1],
               [0.75,0.5,1,1.5],
@@ -113,8 +113,13 @@ Game.Play.prototype = {
     this.scoreText = this.game.add.bitmapText(Game.w-100, 32, 'minecraftia', 'Score: '+score, 32); 
     this.scoreText.anchor.setTo(0.5, 0.5);
 
-
     this.lvlText = this.game.add.bitmapText(32, 32, 'minecraftia', 'Lvl: '+ levelNames[0], 32); 
+
+    // this.lvlText = this.game.add.bitmapText(32, 32, 'minecraftia', 'Lvl: '+ levelNames[0], 32); 
+    this.winText = this.game.add.bitmapText(Game.w/2-100, Game.h/2+100, 'minecraftia', 'YOU WIN!', 24); 
+    this.winText.anchor.setTo(0.5, 0.5);
+    this.winText.visible = false;
+
 
   },
   loadLevel: function(lvl) {
@@ -131,11 +136,13 @@ Game.Play.prototype = {
     }
   },
   update: function() {
+ 
 
+    if (this.player.alive == true) {  
       // Controls
       if (this.game.input.activePointer.isDown) {
         this.currentSpeed = 500;
-        console.log(this.game.input.activePointer.x +' '+this.player.x);
+        // console.log(this.game.input.activePointer.x +' '+this.player.x);
         if (this.player.y > this.game.input.activePointer.y+20 || this.player.y < this.game.input.activePointer.y-20 || this.player.y > this.game.input.activePointer.y+20 || this.player.y < this.game.input.activePointer.y-20) {
           this.game.physics.arcade.moveToPointer(this.player, this.currentSpeed);
           this.player.rotation = this.game.physics.arcade.angleBetween(this.player,this.game.input.activePointer)
@@ -177,11 +184,30 @@ Game.Play.prototype = {
         }
 
       }
+
       if (fishesAlive === 0) {
-        this.lvlText.setText('Lvl: '+levelNames[level]);
-        this.loadLevel(level+=1);
-        this.levelTimer = this.game.time.now;
+        level += 1;
+        if (level > 7) {
+          this.winText.setText('YOU WIN!!');
+          this.winText.visible = true
+        }else {
+          this.lvlText.setText('Lvl: '+levelNames[level-1]);
+          this.loadLevel(level);
+          this.levelTimer = this.game.time.now;
+        }
       }
+    }else {
+      if (this.game.input.activePointer.isDown) {
+        this.player.alive = true; 
+        this.player.reset(Game.w/2, Game.h/2);
+
+        for(var i = 0; i < fishes.length; i++) {
+          fishes[i].sprite.kill();
+        }
+        this.winText.visible = false;
+        this.loadLevel(level);
+      }
+    }
     // // Toggle Music
     // muteKey.onDown.add(this.toggleMute, this);
 
@@ -189,6 +215,9 @@ Game.Play.prototype = {
   fishEatFish: function(player, fish) {
     if (player.scale.x < fish.scale.x) {
         this.playerHitSnd.play(); 
+        this.winText.setText('YOU LOSE!, Click to Play Again');
+        this.winText.visible = true;
+        score = 0;
         player.kill();
     }else if (player.scale.x > fish.scale.x) {
       this.mobHitSnd.play(); 
