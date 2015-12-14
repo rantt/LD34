@@ -87,7 +87,14 @@ Game.Play.prototype = {
     // // Music
     this.music = this.game.add.sound('music');
     this.music.volume = 0.5;
-    // this.music.play('',0,1,true);
+    this.music.play('',0,1,true);
+
+
+    this.playerHitSnd = this.game.add.sound('player_hit');
+    this.playerHitSnd.volume = 0.2;
+
+    this.mobHitSnd = this.game.add.sound('mob_hit');
+    this.mobHitSnd.volume = 0.2;
 
     //Setup WASD and extra keys
     wKey = this.game.input.keyboard.addKey(Phaser.Keyboard.W);
@@ -181,8 +188,10 @@ Game.Play.prototype = {
   },
   fishEatFish: function(player, fish) {
     if (player.scale.x < fish.scale.x) {
+        this.playerHitSnd.play(); 
         player.kill();
     }else if (player.scale.x > fish.scale.x) {
+      this.mobHitSnd.play(); 
       score += 1;
       this.scoreText.setText('Score: ' + score);
       fish.kill();

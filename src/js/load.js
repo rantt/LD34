@@ -56,6 +56,10 @@ Game.Load.prototype = {
     // Music Track
     this.game.load.audio('music','assets/audio/ld34.mp3');
 
+    this.game.load.audio('mob_hit', 'assets/audio/mob_hit.wav'); 
+    this.game.load.audio('player_hit', 'assets/audio/player_hit.wav'); 
+
+
   },
   create: function() {
     this.game.state.start('Menu');
