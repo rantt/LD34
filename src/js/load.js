@@ -49,7 +49,7 @@ Game.Load.prototype = {
   	var preloading = this.game.add.sprite(Game.w/2-64, Game.h/2+50, 'loading');
   	this.game.load.setPreloadSprite(preloading);
 
-    this.game.load.image('background','assets/images/background.png');
+    this.game.load.image('background','assets/images/background2.png');
     this.game.load.spritesheet('fishy', 'assets/images/fishy.png', 72, 72, 2);
 
     // Music Track

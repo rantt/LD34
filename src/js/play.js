@@ -32,16 +32,15 @@ var levels = [[0.75],
               [0.75,0.5,1,1.5],
               ];
 
+var levelMsgs = [];
+          
+
 Game.Play = function(game) {
   this.game = game;
 };
 
 Game.Play.prototype = {
   create: function() {
-
-
-    // this.game.world.setBounds(0, 0 ,1600,1200);
-    // this.space = this.game.add.tileSprite(0,0,1600,1200,'background');
     
     this.game.world.setBounds(0, 0 ,boundedX,boundedY);
     this.space = this.game.add.tileSprite(0,0,boundedX,boundedY,'background');
@@ -52,14 +51,14 @@ Game.Play.prototype = {
 
 
     this.currentSpeed = 0;
+    // Circle Placeholder
     // var circSize = 32;
     // this.circlebmd = this.game.add.bitmapData(circSize, circSize);
     // this.circlebmd.circle(circSize/2,circSize/2,circSize/2,'#FFFFFF');
-
     // this.player = this.game.add.sprite(Game.w/2, Game.h/2, this.circlebmd);
+
     this.player = this.game.add.sprite(Game.w/2, Game.h/2, 'fishy');
     this.player.animations.add('swim', [0,1], 10, true);
-    // this.player.tint = 0x0000ff;
     
     this.player.anchor.setTo(0.5, 0.5);
     this.player.alive = true;
@@ -101,10 +100,10 @@ Game.Play.prototype = {
 
     var sizes = levels[lvl-1];
     for (var i=0;i<sizes.length;i++) {
-      // fishes.push(new Fish(i, this.game, this.player, sizes[i])); 
-      var fish = new Fish(i, this.game, this.player, sizes[i]);
-      fishes.push(fish); 
-      this.game.debug.body(fish);
+      fishes.push(new Fish(i, this.game, this.player, sizes[i])); 
+      // var fish = new Fish(i, this.game, this.player, sizes[i]);
+      // fishes.push(fish); 
+      // this.game.debug.body(fish);
 
       fishesAlive += 1;
     }
