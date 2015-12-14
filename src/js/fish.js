@@ -2,6 +2,14 @@ var Fish = function(index, game, player, scale, enemies) {
   var x = game.world.randomX;
   var y = game.world.randomY;
 
+  if (scale > 1) {
+    if (rand(0,1) == 1) {
+      x = Game.w;
+    }else {
+      x = 0;
+    }
+  }
+
   this.player = player;
   this.game = game;
   this.baseSpeed = 200;

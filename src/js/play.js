@@ -27,12 +27,25 @@ var boundedY = 768;
 var level = 1;
 
 var levels = [[0.75],
-              [0.75, 0.75, 0.75, 0.75, 0.75, 0.75],
-              [0.75,1,1],
+              [0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75],
+              [0.75,1,1,1,1],
               [0.75,0.5,1,1.5],
+              [0.75, 0.75, 0.75, 0.75, 0.75, 2, 2],
+              [0.5, 0.75, 0.75, 1.25, 1.5,2],
+              [0.5,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,4]
               ];
+// levels = [[0.5,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,4]];
 
-var levelMsgs = [];
+var levelNames = ["Oh, it's just you",
+                  "Big fish, little pond",
+                  "Hey, we're all friend here...",
+                  "Where did you come from",
+                  "Double Trouble",
+                  "Three's a crowd",
+                  "Oh, now that's just getting rediculous",
+                  "Big Boss Bass",
+                  ];
+var score = 0;
 
 Game.Play = function(game) {
   this.game = game;
@@ -48,14 +61,13 @@ Game.Play.prototype = {
 
     this.levelTimer = this.game.time.now;
 
-
-
     this.currentSpeed = 0;
     // Circle Placeholder
     // var circSize = 32;
     // this.circlebmd = this.game.add.bitmapData(circSize, circSize);
     // this.circlebmd.circle(circSize/2,circSize/2,circSize/2,'#FFFFFF');
     // this.player = this.game.add.sprite(Game.w/2, Game.h/2, this.circlebmd);
+
 
     this.player = this.game.add.sprite(Game.w/2, Game.h/2, 'fishy');
     this.player.animations.add('swim', [0,1], 10, true);
@@ -75,7 +87,7 @@ Game.Play.prototype = {
     // // Music
     this.music = this.game.add.sound('music');
     this.music.volume = 0.5;
-    this.music.play('',0,1,true);
+    // this.music.play('',0,1,true);
 
     //Setup WASD and extra keys
     wKey = this.game.input.keyboard.addKey(Phaser.Keyboard.W);
@@ -91,76 +103,78 @@ Game.Play.prototype = {
     //Setup Arrow Keys
     this.cursors = game.input.keyboard.createCursorKeys();
 
+    this.scoreText = this.game.add.bitmapText(Game.w-100, 32, 'minecraftia', 'Score: '+score, 32); 
+    this.scoreText.anchor.setTo(0.5, 0.5);
+
+
+    this.lvlText = this.game.add.bitmapText(32, 32, 'minecraftia', 'Lvl: '+ levelNames[0], 32); 
 
   },
   loadLevel: function(lvl) {
     fishes = [];
     this.player.scale.x = 1;
     this.player.scale.y = 1;
+    this.player.x = Game.w/2;
+    this.player.y = Game.h/2;
 
     var sizes = levels[lvl-1];
     for (var i=0;i<sizes.length;i++) {
       fishes.push(new Fish(i, this.game, this.player, sizes[i])); 
-      // var fish = new Fish(i, this.game, this.player, sizes[i]);
-      // fishes.push(fish); 
-      // this.game.debug.body(fish);
-
       fishesAlive += 1;
     }
   },
   update: function() {
 
-    // Controls
-    if (this.game.input.activePointer.isDown) {
-      this.currentSpeed = 500;
-      console.log(this.game.input.activePointer.x +' '+this.player.x);
-      if (this.player.y > this.game.input.activePointer.y+20 || this.player.y < this.game.input.activePointer.y-20 || this.player.y > this.game.input.activePointer.y+20 || this.player.y < this.game.input.activePointer.y-20) {
-        this.game.physics.arcade.moveToPointer(this.player, this.currentSpeed);
-        this.player.rotation = this.game.physics.arcade.angleBetween(this.player,this.game.input.activePointer)
-      }
-    }    
-
-    if (this.cursors.left.isDown || aKey.isDown) {
-        this.player.angle -= 4.5;
-    } else if (this.cursors.right.isDown || dKey.isDown) {
-        this.player.angle += 4.5;
-    }
-
-    if (this.cursors.up.isDown || wKey.isDown) {
+      // Controls
+      if (this.game.input.activePointer.isDown) {
         this.currentSpeed = 500;
-    }else if (this.cursors.down.isDown || sKey.isDown) {
-      this.currentSpeed = 0; //Drift
-    }else {
-        if (this.currentSpeed > 0) {
-            this.currentSpeed -= 12;
+        console.log(this.game.input.activePointer.x +' '+this.player.x);
+        if (this.player.y > this.game.input.activePointer.y+20 || this.player.y < this.game.input.activePointer.y-20 || this.player.y > this.game.input.activePointer.y+20 || this.player.y < this.game.input.activePointer.y-20) {
+          this.game.physics.arcade.moveToPointer(this.player, this.currentSpeed);
+          this.player.rotation = this.game.physics.arcade.angleBetween(this.player,this.game.input.activePointer)
         }
-    }
+      }    
 
-    if (this.currentSpeed > 0) {
-      this.player.play('swim');
-      this.game.physics.arcade.velocityFromRotation(this.player.rotation, this.currentSpeed, this.player.body.velocity);
-    }else {
-      this.player.frame = 0;
-      this.player.animations.stop();
-    }
-
-    this.wrapSprite(this.player);
-
-    for(var i = 0; i < fishes.length; i++)
-    {
-      if (fishes[i].alive) {
-        //Add collision Condition
-        fishes[i].update();
-        this.wrapSprite(fishes[i].sprite);
-        this.game.physics.arcade.overlap(this.player, fishes[i].sprite, this.fishEatFish, null, this);
-
+      if (this.cursors.left.isDown || aKey.isDown) {
+          this.player.angle -= 4.5;
+      } else if (this.cursors.right.isDown || dKey.isDown) {
+          this.player.angle += 4.5;
       }
 
-    }
-    if (fishesAlive === 0) {
-      this.loadLevel(level+=1);
-    }
+      if (this.cursors.up.isDown || wKey.isDown) {
+          this.currentSpeed = 500;
+      }else if (this.cursors.down.isDown || sKey.isDown) {
+        this.currentSpeed = 0; //Drift
+      }else {
+          if (this.currentSpeed > 0) {
+              this.currentSpeed -= 12;
+          }
+      }
+      if (this.currentSpeed > 0) {
+        this.player.play('swim');
+        this.game.physics.arcade.velocityFromRotation(this.player.rotation, this.currentSpeed, this.player.body.velocity);
+      }else {
+        this.player.frame = 0;
+        this.player.animations.stop();
+      }
+      this.wrapSprite(this.player);
 
+      for(var i = 0; i < fishes.length; i++)
+      {
+        if (fishes[i].alive) {
+          //Add collision Condition
+          fishes[i].update();
+          this.wrapSprite(fishes[i].sprite);
+          this.game.physics.arcade.overlap(this.player, fishes[i].sprite, this.fishEatFish, null, this);
+
+        }
+
+      }
+      if (fishesAlive === 0) {
+        this.lvlText.setText('Lvl: '+levelNames[level]);
+        this.loadLevel(level+=1);
+        this.levelTimer = this.game.time.now;
+      }
     // // Toggle Music
     // muteKey.onDown.add(this.toggleMute, this);
 
@@ -169,6 +183,8 @@ Game.Play.prototype = {
     if (player.scale.x < fish.scale.x) {
         player.kill();
     }else if (player.scale.x > fish.scale.x) {
+      score += 1;
+      this.scoreText.setText('Score: ' + score);
       fish.kill();
       fishesAlive -= 1;
       player.scale.x += 0.25;
@@ -199,10 +215,11 @@ Game.Play.prototype = {
   //     this.music.volume = 0.5;
   //   }
   // },
-  render: function() {
-    game.debug.text('fishesAlive: ' + fishesAlive, 32, 96);
-    this.game.debug.spriteInfo(this.player, 64,64);
-    this.game.debug.body(this.player);
-  }
+  // render: function() {
+    // game.debug.text('fishesAlive: ' + fishesAlive, 32, 96);
+    // this.game.debug.spriteInfo(this.player, 64,64);
+    // this.game.debug.body(this.player);
+  // }
+
 
 };
