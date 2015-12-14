@@ -59,6 +59,7 @@ Game.Load.prototype = {
     this.game.load.audio('mob_hit', 'assets/audio/mob_hit.wav'); 
     this.game.load.audio('player_hit', 'assets/audio/player_hit.wav'); 
 
+    this.game.load.image('twitter','assets/images/twitter.png');
 
   },
   create: function() {

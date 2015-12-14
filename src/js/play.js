@@ -59,7 +59,7 @@ Game.Play.prototype = {
 
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
-    this.levelTimer = this.game.time.now;
+    // this.levelTimer = this.game.time.now;
 
     this.currentSpeed = 0;
     // Circle Placeholder
@@ -120,10 +120,16 @@ Game.Play.prototype = {
     this.winText.anchor.setTo(0.5, 0.5);
     this.winText.visible = false;
 
+    this.twitterButton = this.game.add.button(this.game.world.centerX, this.game.world.centerY + 200,'twitter', this.twitter, this);
+    this.twitterButton.anchor.set(0.5);
+    this.twitterButton.visible = false;
+
+
 
   },
   loadLevel: function(lvl) {
     fishes = [];
+    fishesAlive = 0;
     this.player.scale.x = 1;
     this.player.scale.y = 1;
     this.player.x = Game.w/2;
@@ -188,18 +194,20 @@ Game.Play.prototype = {
       if (fishesAlive === 0) {
         level += 1;
         if (level > 7) {
+
+          this.twitterButton.visible = true;
           this.winText.setText('YOU WIN!!');
           this.winText.visible = true
         }else {
           this.lvlText.setText('Lvl: '+levelNames[level-1]);
           this.loadLevel(level);
-          this.levelTimer = this.game.time.now;
+          // this.levelTimer = this.game.time.now;
         }
       }
     }else {
       if (this.game.input.activePointer.isDown) {
-        this.player.alive = true; 
         this.player.reset(Game.w/2, Game.h/2);
+        this.player.alive = true;
 
         for(var i = 0; i < fishes.length; i++) {
           fishes[i].sprite.kill();
@@ -229,6 +237,10 @@ Game.Play.prototype = {
       player.scale.y += 0.25;
     }
   },
+  twitter: function() {
+    window.open('http://twitter.com/share?text=My+best+score+is+'+score+'+playing+Always+A+Bigger+Fish+See+if+you+can+beat+it.+at&via=rantt_&url=http://www.divideby5.com/games/LD34/&hashtags=LDJAM,LD48', '_blank');
+  },
+
   wrapSprite: function(sprite) {
     if (sprite.x < 0) {
       sprite.x = boundedX;
