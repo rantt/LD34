@@ -85,7 +85,7 @@ Game.Play.prototype = {
     this.loadLevel(level);
 
     // // Music
-    this.music = this.game.add.sound('music');
+    this.music = this.game.add.audio('music');
     this.music.volume = 0.5;
     this.music.play('',0,1,true);
 
@@ -238,7 +238,10 @@ Game.Play.prototype = {
     }
   },
   twitter: function() {
-    window.open('http://twitter.com/share?text=My+best+score+is+'+score+'+playing+Always+A+Bigger+Fish+See+if+you+can+beat+it.+at&via=rantt_&url=http://www.divideby5.com/games/LD34/&hashtags=LDJAM,LD48', '_blank');
+    var twitter_name = 'rantt_';
+    var game_url = 'http://www.divideby5.com/games/LD34/';
+    var tags = ['LDJAM','LD48'];
+    window.open('http://twitter.com/share?text=My+best+score+is+'+score+'+playing+Always+A+Bigger+Fish+See+if+you+can+beat+it.+at&via='+twitter_name+'&url='+game_url+'&hashtags='+tags.join(','), '_blank');
   },
 
   wrapSprite: function(sprite) {
